@@ -2736,9 +2736,9 @@ function listPanel(){
 // 报价明细（同名同价合并）；导出 CSV 用同一份数据
 function quoteRows(){
   const B = budget(), furn = new Map();
-  state.furniture.forEach(f => { const k = f.type + '|' + f.name + '|' + (f.sku || '') + '|' + priceOf(f), o = furn.get(k) || {f, n:0}; o.n++; furn.set(k, o); });
+  state.furniture.forEach(f => { const k = f.type + '|' + f.name + '|' + (f.merchantId || '') + '|' + (f.sku || '') + '|' + priceOf(f), o = furn.get(k) || {f, n:0}; o.n++; furn.set(k, o); });
   const rows = [...furn.values()].sort((a, b) => priceOf(b.f)*b.n - priceOf(a.f)*a.n)
-    .map(({f, n}) => [tr('家具家电', 'Furniture'), nm(f.name), `${f.sku ? `SKU ${f.sku} · ` : ''}${f.w}×${f.d}`, n, tr('件', 'pcs'), priceOf(f), priceOf(f)*n]);
+    .map(({f, n}) => [tr('家具家电', 'Furniture'), nm(f.name), `${f.sku ? `${f.merchantName || ''} · SKU ${f.sku} · ` : ''}${f.w}×${f.d}`, n, tr('件', 'pcs'), priceOf(f), priceOf(f)*n]);
   B.mats.forEach(({m, a, c}) => rows.push([tr('地面', 'Flooring'), nm(MATS[m].name), tr('含 5% 损耗', 'incl. 5% waste'), +(a*1.05).toFixed(2), 'm²', MATS[m].price, c]));
   rows.push([tr('墙面', 'Walls'), tr('乳胶漆', 'Latex paint'), tr('含 10% 损耗', 'incl. 10% waste'), +(B.paintArea*1.1).toFixed(2), 'm²', 28, B.paint]);
   return {rows, B};

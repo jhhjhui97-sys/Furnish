@@ -103,8 +103,10 @@
     const width = product.width ?? product.w, depth = product.depth ?? product.d, height = product.height ?? product.h;
     const original = new THREE.Box3().setFromObject(object);
     const size = original.getSize(new THREE.Vector3());
-    if (Math.min(size.x, size.y, size.z) <= 0) throw Error('模型缺少有效三维尺寸');
-    object.scale.set(width / 1000 / size.x, height / 1000 / size.y, depth / 1000 / size.z);
+    if ([size.x,size.y,size.z].filter(n => n > 1e-5).length < 2) throw Error('模型缺少有效尺寸');
+    object.scale.set(size.x > 1e-5 ? width / 1000 / size.x : 1,
+      size.y > 1e-5 ? height / 1000 / size.y : 1,
+      size.z > 1e-5 ? depth / 1000 / size.z : 1);
     const scaled = new THREE.Box3().setFromObject(object);
     const center = scaled.getCenter(new THREE.Vector3());
     object.position.sub(new THREE.Vector3(center.x, scaled.min.y, center.z));
@@ -203,7 +205,7 @@
     else if(is3D()){const r=document.querySelector('#stage').getBoundingClientRect();point=window.View3D.groundAt(r.left+r.width/2,r.top+r.height/2);}
     if(!point)point={x:view.x0+svg.clientWidth/2/view.s,y:view.y0+svg.clientHeight/2/view.s};
     const placed=F(base[0],p.name,Math.round(point.x/10)*10,Math.round(point.y/10)*10,p.width,p.depth,0,base[4]);
-    Object.assign(placed,{productId:p.id,sku:p.sku,merchantName:p.merchantName,material:p.material,note:p.note,price:p.salePrice,h:p.height});
+    Object.assign(placed,{productId:p.id,sku:p.sku,merchantId:p.merchantId,merchantName:p.merchantName,material:p.material,note:p.note,price:p.salePrice,h:p.height});
     pushOut(placed);
     mutate(() => state.furniture.push(placed));
     selectIds([placed.id]);
