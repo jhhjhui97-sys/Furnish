@@ -62,7 +62,7 @@ const FurnishCatalog = (() => {
 
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function renderProductList(products) {
-    if (!products.length) return '<div class="sku-empty">该家具暂无已审核商品</div>';
+    if (!products.length) return '<div class="sku-empty">该家具暂无已审核商品<div class="sku-actions"><button type="button" class="btn chip" data-manage-products>录入商品</button><button type="button" class="btn chip" data-add-template>放入示意家具</button></div></div>';
     return products.map(raw => {
       const p = publicProduct(raw), e = escapeHtml;
       return `<div class="sku-row"><b>${e(p.name)}</b><small>SKU ${e(p.sku)} · ${e(p.merchantName)}</small>` +
@@ -70,7 +70,7 @@ const FurnishCatalog = (() => {
         `<small>${e(p.styles.join(' / '))} · ${e(p.tiers.join(' / '))}</small>` +
         `<span class="sku-note">${e(p.note)}</span><strong>¥${e(p.salePrice)}</strong>` +
         `<button type="button" class="btn chip" data-product="${e(p.id)}">加入方案</button></div>`;
-    }).join('');
+    }).join('') + '<div class="sku-actions"><button type="button" class="btn chip" data-add-template>放入示意家具</button></div>';
   }
 
   return { validateProduct, eligibleProducts, publicProduct, inspectGlb, renderProductList };

@@ -191,19 +191,29 @@
     element.parentElement.querySelectorAll('.sku-list').forEach(other => other.remove());
     const panel=document.createElement('div');panel.className='sku-list';panel.innerHTML=renderProductList(productChoices(item));
     element.insertAdjacentElement('afterend',panel);
+    panel.scrollIntoView({block:'nearest'});
   }
   document.querySelector('#lib').addEventListener('pointerdown',event=>{
     if(event.target.closest('[data-product]')) { libDrag=null;event.stopPropagation(); }
   },true);
   document.querySelector('#lib').addEventListener('click',event=>{
+    const pointForNewItem=()=>{
+      if(ui.sel?.kind==='room'){const r=ROOMS.find(x=>x.id===ui.sel.id),b=bbox(r.poly);return {x:(b[0]+b[2])/2,y:(b[1]+b[3])/2};}
+      if(is3D()){const r=document.querySelector('#stage').getBoundingClientRect(),p=window.View3D.groundAt(r.left+r.width/2,r.top+r.height/2);if(p)return p;}
+      return {x:view.x0+svg.clientWidth/2/view.s,y:view.y0+svg.clientHeight/2/view.s};
+    };
+    if(event.target.closest('[data-manage-products]')){open();return;}
+    const sample=event.target.closest('[data-add-template]');
+    if(sample){
+      const card=sample.closest('.sku-list')?.previousElementSibling;
+      if(card){const point=pointForNewItem();addItem(itemOf(card),point.x,point.y);}
+      return;
+    }
     const button=event.target.closest('[data-product]');if(!button)return;
     const p=byId(button.dataset.product);if(!p)return;
     const base=templates.find(t=>t.item[0]===p.templateType && t.item[1]===p.templateName)?.item;
     if(!base)return;
-    let point;
-    if(ui.sel?.kind==='room'){const r=ROOMS.find(x=>x.id===ui.sel.id),b=bbox(r.poly);point={x:(b[0]+b[2])/2,y:(b[1]+b[3])/2};}
-    else if(is3D()){const r=document.querySelector('#stage').getBoundingClientRect();point=window.View3D.groundAt(r.left+r.width/2,r.top+r.height/2);}
-    if(!point)point={x:view.x0+svg.clientWidth/2/view.s,y:view.y0+svg.clientHeight/2/view.s};
+    const point=pointForNewItem();
     const placed=F(base[0],p.name,Math.round(point.x/10)*10,Math.round(point.y/10)*10,p.width,p.depth,0,base[4]);
     Object.assign(placed,{productId:p.id,sku:p.sku,merchantId:p.merchantId,merchantName:p.merchantName,material:p.material,note:p.note,price:p.salePrice,h:p.height});
     pushOut(placed);

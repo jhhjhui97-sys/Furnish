@@ -605,6 +605,7 @@ footer kbd{background:var(--card);border-color:var(--line);color:var(--muted);fo
 .sku-row{display:grid;gap:4px;padding:10px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--card);font-size:12px}
 .sku-row small,.sku-note{color:var(--muted);overflow-wrap:anywhere}.sku-row strong{font-size:14px}
 .sku-row button{justify-self:start}.sku-empty{padding:12px;color:var(--muted)}
+.sku-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}.sku-actions button{font-size:12px}
 .product-instance{padding:9px 10px;margin:8px 0;border-radius:8px;background:var(--soft);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
 #productManager{width:min(900px,96vw);max-height:94vh;overflow:auto;border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;background:var(--panel);color:var(--ink);box-shadow:var(--shadow-lg)}
 #productManager::backdrop{background:#171717b8}
@@ -3781,7 +3782,7 @@ function openCustom(){
 
 /* ======================= 家具库 ======================= */
 const itemCard = (it, ci, ii) => { const [t,n,w,d,col,price,,cid] = it, pad = Math.max(w,d)*.08;
-  return `<div class="item ${cid ? 'custom' : ''}" data-key="${ci}:${ii}" title="${tr('点击添加，或拖到平面图中的指定位置', 'Click to add, or drag onto the plan')}${price ? ` · ¥${price}` : ''}">
+  return `<div class="item ${cid ? 'custom' : ''}" data-key="${ci}:${ii}" title="${tr('点击查看商品，或拖到平面图放入示意家具', 'Click to view products, or drag a sample item onto the plan')}${price ? ` · ¥${price}` : ''}">
     ${cid ? `<button class="del" data-cdel="${cid}" title="${tr('从「我的家具」删除', 'Remove from My Items')}">${ico('x')}</button>` : ''}
     <svg viewBox="${-w/2-pad} ${-d/2-pad} ${w+2*pad} ${d+2*pad}">${furnSVG(t,w,d,col)}</svg><b>${esc(nm(n))}</b><small>${w}×${d}</small></div>`; };
 function buildLib(){
@@ -3852,7 +3853,7 @@ function endLibDrag(e, ok){
     return;
   }
   if (!ok) return;
-  if (window.FurnishProductUI?.hasProducts(d.it)) {
+  if (window.FurnishProductUI) {
     window.FurnishProductUI.toggle(d.el, d.it);
     return;
   }
